@@ -12,7 +12,7 @@ const presetOptions = [
   { value: 'marketing', label: 'Marketing', description: 'Campaigns, copywriting, and growth strategy prompts.' },
   { value: 'design', label: 'Design', description: 'Visual design, UX/UI, and creative direction prompts.' },
   { value: 'image', label: 'Image', description: 'Image generation, editing, and visual content prompts.' }
-]
+]   
 
 const creativityLevels = [
   { value: 'low', label: 'Grounded', helper: 'Stick to literal instructions, deterministic output.' },
@@ -63,26 +63,34 @@ export default function Home() {
     [preset]
   )
 
-  /* --------------------------- HEALTH CHECK (Simplified) -------------------- */
+  /* --------------------------- HEALTH CHECK (Improved) -------------------- */
   useEffect(() => {
-    async function ping() {
+    async function ping(retries = 3) {
       try {
-        const r = await fetch(`${API_BASE}/health`)
-        if (!r.ok) throw new Error()
+        const r = await fetch(`${API_BASE}/health?check=${Date.now()}`, {
+          cache: "no-store",
+        });
+
+        if (!r.ok) throw new Error();
 
         setApiStatus({
           healthy: true,
-          label: 'Live mode'
-        })
-      } catch {
-        setApiStatus({ 
-          healthy: false, 
-          label: 'Offline' 
-        })
+          label: "Live mode",
+        });
+      } catch (err) {
+        if (retries > 0) {
+          return ping(retries - 1); // retry silently
+        }
+
+        setApiStatus({
+          healthy: false,
+          label: "Offline",
+        });
       }
     }
-    ping()
-  }, [])
+
+    ping();
+  }, []);
 
   /* ----------------------------- GENERATE ---------------------------------- */
   async function handleGenerate() {
