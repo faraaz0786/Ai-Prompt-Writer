@@ -1,8 +1,3 @@
-Below is a **clean, professional, production-ready README.md** tailored specifically for **your AI Prompt Writer project** (Groq-only version + modern UI).
-It will look great on GitHub and clearly explain everything to developers and users.
-
----
-
 # 🚀 **AI Prompt Writer**
 
 ### Turn rough phrases into fully structured, professional AI prompts.
