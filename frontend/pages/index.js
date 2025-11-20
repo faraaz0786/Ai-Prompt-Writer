@@ -297,6 +297,8 @@ export default function Home() {
                       setPhrase(entry.phrase)
                       setCreativity(entry.creativity)
                       setPreset(entry.preset)
+                      setResult(entry.payload)   // ⭐ Load previous response
+                      setStatusNote("")          // optional: clear degraded messages
                     }}
                     className="w-full text-left px-4 py-3 rounded-2xl border border-white/5 hover:border-white/30 transition"
                   >
