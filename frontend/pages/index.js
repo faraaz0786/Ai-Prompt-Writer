@@ -3,7 +3,7 @@ import { useEffect, useMemo, useState } from 'react'
 import PromptCard from '../components/PromptCard'
 import Header from '../components/Header'
 
-const API_BASE = process.env.NEXT_PUBLIC_API_BASE || 'http://localhost:4000'
+const API_BASE = "/api";
 
 const presetOptions = [
   { value: 'general', label: 'General', description: 'Versatile prompts for any task or workflow.' },
