@@ -1,5 +1,5 @@
 // pages/api/generate-prompt.js
-import { generateGroq } from "../../providers/groq";
+import { generateGroq } from "../../providers/groq.js";
 
 export default async function handler(req, res) {
   if (req.method !== "POST") {
