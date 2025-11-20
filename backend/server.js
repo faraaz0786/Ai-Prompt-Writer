@@ -1,4 +1,4 @@
-// backend/server.js  — GROQ-ONLY VERSION
+// backend/server.js — GROQ-ONLY VERSION WITH CORRECT CORS
 
 import express from "express";
 import cors from "cors";
@@ -8,15 +8,34 @@ dotenv.config();
 import { generateGroq } from "./providers/groq.js";
 
 const app = express();
-app.use(cors());
-app.use(express.json());
 
+/* ----------------------------------------------------------- */
+/*                     🚀 FIXED CORS CONFIG                    */
+/* ----------------------------------------------------------- */
+app.use(
+  cors({
+    origin: [
+      "http://localhost:3000",
+      "http://localhost:3001",
+      "https://promptstudio-sand.vercel.app",   // your Vercel frontend
+    ],
+    methods: ["GET", "POST", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+  })
+);
+
+// Allow preflight
+app.options("*", cors());
+
+/* ----------------------------------------------------------- */
+/*                       BASIC CONFIG                          */
+/* ----------------------------------------------------------- */
+app.use(express.json());
 const PORT = process.env.PORT || 4000;
 
-/* -------------------------------------------------------------------------- */
-/*                             HEALTH CHECK                                   */
-/* -------------------------------------------------------------------------- */
-
+/* ----------------------------------------------------------- */
+/*                          HEALTH                             */
+/* ----------------------------------------------------------- */
 app.get("/health", (_req, res) => {
   return res.json({
     status: "ok",
@@ -26,10 +45,9 @@ app.get("/health", (_req, res) => {
   });
 });
 
-/* -------------------------------------------------------------------------- */
-/*                         SYSTEM PROMPT BUILDER                               */
-/* -------------------------------------------------------------------------- */
-
+/* ----------------------------------------------------------- */
+/*                    SYSTEM PROMPT BUILDER                    */
+/* ----------------------------------------------------------- */
 function buildSystemPrompt(phrase, creativity = "medium", preset = "general") {
   const creativityPercent =
     creativity === "high" ? "80%" : creativity === "low" ? "40%" : "70%";
@@ -51,7 +69,6 @@ function buildSystemPrompt(phrase, creativity = "medium", preset = "general") {
 
   return `
 You are a ${presetRoles[preset] || presetRoles["general"]}.
-
 Your job is to expand a short phrase into a complete, production-ready professional AI prompt.
 
 Short phrase: "${phrase}"
@@ -71,10 +88,9 @@ Only output the fully formatted prompt. No meta text.
   `;
 }
 
-/* -------------------------------------------------------------------------- */
-/*                               MAIN ROUTE                                   */
-/* -------------------------------------------------------------------------- */
-
+/* ----------------------------------------------------------- */
+/*                        MAIN ROUTE                           */
+/* ----------------------------------------------------------- */
 app.post("/generate-prompt", async (req, res) => {
   try {
     const { phrase, creativity = "medium", preset = "general" } = req.body;
@@ -106,10 +122,9 @@ app.post("/generate-prompt", async (req, res) => {
   }
 });
 
-/* -------------------------------------------------------------------------- */
-/*                             START SERVER                                    */
-/* -------------------------------------------------------------------------- */
-
+/* ----------------------------------------------------------- */
+/*                       START SERVER                          */
+/* ----------------------------------------------------------- */
 app.listen(PORT, () => {
   console.log(`🔥 AI Prompt Writer backend running on port ${PORT} (Groq-only mode)`);
 });
